@@ -54,6 +54,7 @@ public class StimuliScreen extends Activity {
                 else{
                     r.setTag("true");
                 }
+                //t
 
                 r.setOnClickListener(new View.OnClickListener() {
                     @Override
