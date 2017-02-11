@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MRDA</string>
+    <string name="welcome_text">MRDA Prototype</string>
+    <string name="title_activity_stimuli_screen">StimuliScreen</string>
+</resources>
