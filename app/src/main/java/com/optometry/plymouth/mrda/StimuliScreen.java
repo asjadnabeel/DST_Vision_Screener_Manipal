@@ -20,7 +20,7 @@ public class StimuliScreen extends Activity {
     LinearLayout stimuliPanel;
     int circleAmount = 5;
     int level = 1;
-    //ty
+    //t
     int numOfRounds = 19;
 
     Bitmap[] levelList = new Bitmap[circleAmount];
