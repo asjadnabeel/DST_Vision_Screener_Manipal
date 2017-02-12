@@ -16,70 +16,82 @@ import android.widget.Toast;
 public class StimuliScreen extends Activity {
 
     Bitmap[] stimuliList = new Bitmap[19];
+
     Bitmap blankCircle;
+    Bitmap feedbackHolder;
     LinearLayout stimuliPanel;
+    LinearLayout feedbackPanel;
     int circleAmount = 5;
     int level = 1;
     //
     int numOfRounds = 19;
 
     Bitmap[] levelList = new Bitmap[circleAmount];
+    Bitmap[] feedbackImgList = new Bitmap[circleAmount];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stimuli_screen);
         loadSimtuli();
-        blankCircle = BitmapFactory.decodeResource(getResources(), R.drawable.rda_blank);
-        stimuliPanel = (LinearLayout) findViewById(R.id.stimuliLayout);
+        loadFeedbackImg();
 
+        blankCircle = BitmapFactory.decodeResource(getResources(), R.drawable.rda_blank);
+        //feedbackHolder = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+
+        stimuliPanel = (LinearLayout) findViewById(R.id.stimuliLayout);
+        feedbackPanel = (LinearLayout) findViewById(R.id.feedbackLayer);
         startRound();
     }
 
     private void startRound() {
         ImageView r;
         Bitmap bm;
+        ImageView feedback;
 
         levelList = populatLevelList(level);
 
             for (int i = 0; i < circleAmount; i++) {
                 r = new ImageView(this);
+                feedback = new ImageView(this);
+
                 r.setClickable(true);
 
                 bm = levelList[i];
 
+
                 if(bm.sameAs(blankCircle))
                 {
-                    r.setTag("false");
+                    //r.setTag("false");
+                    r.setTag(i);
+
                 }
                 else{
-                    r.setTag("true");
+                    //r.setTag("true");
+
+                    r.setTag(i);
                 }
                 //t
 
                 r.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String tag = (String) v.getTag();
+                        //String tag = (String) v.getTag();
+                        int index = (int) v.getTag();
                         Toast.makeText(v.getContext(),
-                                "You clicked: " + tag + ", On level " + level,
+                                "You clicked: " + index + ", On level " + level,
                                 Toast.LENGTH_LONG).show();
 
-                        stimuliPanel.removeAllViews();
-                        level++;
-
-                        if(level <= numOfRounds) {
-                            startRound();
-                        }
-                        else{
-                            Toast.makeText(v.getContext(), "GAME FINISHED :D", Toast.LENGTH_LONG).show();
-                        }
+                        feedbackImgList[index] = BitmapFactory.decodeResource(getResources(), R.drawable.rda_blank);
                     }
                 });
 
                 r.setImageBitmap(Bitmap.createScaledBitmap(bm, 200, 200, false));
+                feedback.setImageBitmap(Bitmap.createScaledBitmap(feedbackImgList[i], 200, 200, false));
 
                 stimuliPanel.addView(r);
+                feedbackPanel.addView(feedback);
+
             }
         }
 
@@ -119,5 +131,11 @@ public class StimuliScreen extends Activity {
         stimuliList[16] = BitmapFactory.decodeResource(getResources(), R.drawable.rda3_10);
         stimuliList[17] = BitmapFactory.decodeResource(getResources(), R.drawable.rda3_20);
         stimuliList[18] = BitmapFactory.decodeResource(getResources(), R.drawable.rda3_30);
+    }
+    private void loadFeedbackImg()
+    {
+        for(int i = 0; i <circleAmount; i++){
+            feedbackImgList[i] = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        }
     }
 }
