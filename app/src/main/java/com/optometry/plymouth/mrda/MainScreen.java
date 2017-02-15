@@ -26,7 +26,9 @@ public class MainScreen extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(MainScreen.this, StimuliScreen.class);
+                //Intent intent = new Intent(MainScreen.this, StimuliScreen.class);
+                Intent intent = new Intent(MainScreen.this, Stimuli_Canvas.class);
+
                 startActivity(intent);
                 //Toast.makeText(MainScreen.this, "Start button clicked!", Toast.LENGTH_SHORT).show();
             }

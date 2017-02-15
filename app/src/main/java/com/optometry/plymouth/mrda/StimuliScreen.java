@@ -4,10 +4,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,12 +13,20 @@ public class StimuliScreen extends Activity {
 
     Bitmap[] stimuliList = new Bitmap[19];
     Bitmap blankCircle;
+
     LinearLayout stimuliPanel;
+    LinearLayout feedbackPanel;
+
+    final int bitmapDimension = 200;
     int circleAmount = 5;
     int level = 1;
-    int numOfRounds = 19;
+    int numOfRounds = 10;
 
     Bitmap[] levelList = new Bitmap[circleAmount];
+
+    //This list mirrors the users choices.
+    //  Where 0 is not chosen, 1 is chosen
+    int[] chosenList = new int[circleAmount];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,54 +35,49 @@ public class StimuliScreen extends Activity {
         loadSimtuli();
         blankCircle = BitmapFactory.decodeResource(getResources(), R.drawable.rda_blank);
         stimuliPanel = (LinearLayout) findViewById(R.id.stimuliLayout);
+        feedbackPanel = (LinearLayout) findViewById(R.id.feedbackLayout);
 
         startRound();
     }
 
     private void startRound() {
-        ImageView r;
+        ImageView imgCircle;
+        ImageView imgFeedback;
+
         Bitmap bm;
+        Bitmap feedbackImg;
 
         levelList = populatLevelList(level);
 
             for (int i = 0; i < circleAmount; i++) {
-                r = new ImageView(this);
-                r.setClickable(true);
+                imgCircle = new ImageView(this);
+                imgFeedback = new ImageView(this);
+
+
+
+                imgCircle.setClickable(true);
+                chosenList[i] = 0; //Mark as unclicked
 
                 bm = levelList[i];
+                feedbackImg = BitmapFactory.decodeResource(getResources(), R.drawable.feedback_blank);
+
 
                 if(bm.sameAs(blankCircle))
                 {
-                    r.setTag("false");
+                    imgCircle.setTag("false");
                 }
                 else{
-                    r.setTag("true");
+                    imgCircle.setTag("true");
                 }
-                //t
 
-                r.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String tag = (String) v.getTag();
-                        Toast.makeText(v.getContext(),
-                                "You clicked: " + tag + ", On level " + level,
-                                Toast.LENGTH_LONG).show();
+                setOnClick(imgCircle, imgFeedback, i);
 
-                        stimuliPanel.removeAllViews();
-                        level++;
 
-                        if(level <= numOfRounds) {
-                            startRound();
-                        }
-                        else{
-                            Toast.makeText(v.getContext(), "GAME FINISHED :D", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+                imgCircle.setImageBitmap(Bitmap.createScaledBitmap(bm, bitmapDimension, bitmapDimension, false));
+                imgFeedback.setImageBitmap(Bitmap.createScaledBitmap(feedbackImg, bitmapDimension, bitmapDimension,false));
 
-                r.setImageBitmap(Bitmap.createScaledBitmap(bm, 200, 200, false));
-
-                stimuliPanel.addView(r);
+                stimuliPanel.addView(imgCircle);
+                feedbackPanel.addView(imgFeedback);
             }
         }
 
@@ -94,6 +93,31 @@ public class StimuliScreen extends Activity {
         options[circleAmount - 1] = stimuliList[level - 1];
 
         return options;
+    }
+
+    private void setOnClick(final ImageView btn, final ImageView feedbackImg, final int index){
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String tag = (String) v.getTag();
+                Toast.makeText(v.getContext(),
+                        "You clicked: " + tag + ", On level " + level,
+                        Toast.LENGTH_LONG).show();
+
+                if(chosenList[index] == 0)
+                {
+                    Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.feedback_arrow);
+                    feedbackImg.setImageBitmap(Bitmap.createScaledBitmap(bm, bitmapDimension, bitmapDimension, false));
+                    chosenList[index] = 1;
+                }
+                else{
+                    Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.feedback_blank);
+                    feedbackImg.setImageBitmap(Bitmap.createScaledBitmap(bm, bitmapDimension, bitmapDimension, false));
+                    chosenList[index] = 0;
+                }
+            }
+        });
     }
 
     //To maintain quick loading, load all into memory
