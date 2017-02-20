@@ -29,14 +29,14 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     int level = 1;
 
     //These should reflect user options
-    int intNumOfStimuli = 10;
-    int intNumOfRealStimuli = 1;
+    int intNumOfStimuli = 5;
+    int intNumOfRealStimuli = 2;
 
     //positional information
     final int bitmapDimension = 200;
-    final int stimImageGap = 20;
+    final int stimImageGap = 10;
 
-    Stimuli[] stimulisList;
+    Stimuli[] stimulisList; //R
 
     public StimuliSubCanvas(Context context){
         super(context);
@@ -51,7 +51,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         //This one should change according to the level
         bmpStimuli = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_20), bitmapDimension,bitmapDimension, false);
 
-        bmpFeedback = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.feedback_arrow), bitmapDimension,bitmapDimension, false);
+        bmpFeedback = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.feedback_arrow2), bitmapDimension,bitmapDimension, false);
         bmpBlankFeedback = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.feedback_blank), bitmapDimension,bitmapDimension, false);
 
         stimulisList = new Stimuli[intNumOfStimuli];
@@ -83,10 +83,12 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
         float xPosition, yPosition;
 
+        //Ensure the list is balanced in the center horizontally
         xPosition = (width / 2) -  (((bmpStimuli.getWidth() * intNumOfStimuli) + (stimImageGap * intNumOfStimuli)) / 2);
+        //Set in the center vertically
         yPosition = (height / 2) - bmpStimuli.getHeight();
 
-        /*Set xCoordinates according to position*/
+        /*Set coordinates according to position*/
         for(int i = 0; i < intNumOfStimuli; i++)
         {
             stimulisList[i].setCoordinates(xPosition,yPosition);
