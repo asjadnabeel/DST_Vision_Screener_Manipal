@@ -30,7 +30,7 @@ public class MainScreen extends AppCompatActivity {
                 Intent intent = new Intent(MainScreen.this, Stimuli_Canvas.class);
 
                 startActivity(intent);
-                //Toast.makeText(MainScreen.this, "Start button clicked!", Toast.LENGTH_SHORT).show();
+
             }
         });
 
