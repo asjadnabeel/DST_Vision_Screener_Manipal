@@ -26,15 +26,14 @@ public class MainScreen extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                //Intent intent = new Intent(MainScreen.this, StimuliScreen.class);
+                //When "Start" button is clicked, do the following
                 Intent intent = new Intent(MainScreen.this, Stimuli_Canvas.class);
 
                 startActivity(intent);
-
             }
         });
 
-        //Option button function
+        //When "Options" is clicked
         findViewById(R.id.btnOptions).setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -46,18 +45,16 @@ public class MainScreen extends AppCompatActivity {
                 dialog.setContentView(R.layout.options_menu);
                 dialog.setTitle("Options");
 
-                //Force button confirmation to leave the menu
+                //Prevent closing the menu by clicking outside of it
                 dialog.setCanceledOnTouchOutside(false);
-
 
                 Button confirmButton = (Button) dialog.findViewById(R.id.dialogOptionsOK);
 
-                // if ok button is clicked, save our settings and leave menu
+                // if Confirm button is clicked, save our settings and leave menu
                 confirmButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //Note: User SharedPreferences to store/retrieve data
-                        Toast.makeText(MainScreen.this, "Options 'OK' button clicked!", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                 });
@@ -67,7 +64,6 @@ public class MainScreen extends AppCompatActivity {
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(MainScreen.this, "Options 'Cancel' button clicked!", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
                 });

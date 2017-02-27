@@ -6,26 +6,28 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/border">
 
         <TextView
-            android:text="Option 1"
+            android:text="@string/Option_label_1"
             android:layout_width="200dp"
             android:layout_height="match_parent"
             android:id="@+id/lblOption1"
             android:layout_weight="1"
+            android:textSize="17dp"
             android:gravity="center_horizontal|center" />
 
         <EditText
-            android:id="@+id/username"
-            android:inputType="textEmailAddress"
+            android:id="@+id/txtNumOfTotalStim"
+            android:inputType="number"
+            android:textSize="20dp"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
-            android:hint="Option 1 Input"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1" />
     </LinearLayout>
@@ -33,19 +35,22 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/border">
 
         <TextView
-            android:text="Option 2"
+            android:text="@string/Option_label_2"
             android:layout_width="200dp"
             android:layout_height="match_parent"
             android:id="@+id/lblOption2"
             android:layout_weight="1"
+            android:textSize="17dp"
             android:gravity="center" />
 
         <EditText
-            android:id="@+id/password"
-            android:inputType="textPassword"
+            android:id="@+id/txtNumOfRealStim"
+            android:inputType="number"
+            android:textSize="20dp"
             android:layout_width="200dp"
             android:layout_height="match_parent"
             android:layout_marginTop="4dp"
@@ -53,7 +58,67 @@
             android:layout_marginRight="4dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif"
-            android:hint="Option 2 Input"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/border">
+
+        <TextView
+            android:text="@string/Option_label_3"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:id="@+id/lblOption3"
+            android:layout_weight="1"
+            android:textSize="17dp"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/txtNumOfAttempts"
+            android:inputType="number"
+            android:textSize="20dp"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/border">
+
+        <TextView
+            android:text="@string/Option_label_4"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:id="@+id/lblOption4"
+            android:layout_weight="1"
+            android:textSize="17dp"
+            android:gravity="center" />
+
+        <EditText
+            android:id="@+id/txtTimeout"
+            android:hint="Enter 0 to disable timeout"
+            android:textSize="20dp"
+            android:inputType="number"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1" />
     </LinearLayout>

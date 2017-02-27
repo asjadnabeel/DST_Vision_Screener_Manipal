@@ -15,6 +15,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.Arrays;
@@ -37,6 +38,8 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     Bitmap bmpBlankFeedback;
     Bitmap bmpStimuli;
     Bitmap bmpBlankStimuli;
+
+    Button btnNext;
 
 /*    LinearLayout feedbackLayout;
     TextView lblInstructions;
@@ -87,9 +90,9 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         this.setOnTouchListener(this);
 
         /*initialise btnContinue - set bmp image and coordinates on the screen*/
-        btnContinue = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher), 300,300, false);
-        xCoordBtnContinue = screenWidth - (btnContinue.getWidth() + 10);//10 is the margin
-        yCoordBtnContinue = screenHeight - (btnContinue.getHeight() + 50);
+        btnContinue = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn_next), 400,100, false);
+        xCoordBtnContinue = screenWidth - (btnContinue.getWidth() + 50);//10 is the margin
+        yCoordBtnContinue = screenHeight - (btnContinue.getHeight() + 80);
 
         //Set feedback settings
         textFont = new TextPaint();
@@ -100,6 +103,8 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         lblInstructions = "Please select " + intNumOfRealStimuli + " Stimuli";
         lblLevel = stimuliNamesMap.get(level);
         lblFeedback = "";
+
+        btnNext = new Button(getContext());
 
         createLevel();
     }
@@ -250,6 +255,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
             if ((touchXCoord >= xCoordBtnContinue && touchXCoord <= xCoordBtnContinue + btnContinue.getWidth())
                     && (touchYCoord >= yCoordBtnContinue && touchYCoord <= yCoordBtnContinue + btnContinue.getHeight())){
+
                 onBtnContinueClick();
 
             }//end of if
