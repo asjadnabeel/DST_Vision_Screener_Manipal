@@ -71,7 +71,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     //Trial data
     int currentTrial = 0;
     int level = 0;
-    int numOfTrials = 20;
+    int numOfTrials = 5;
 
     //These should reflect user options
     int intNumOfStimuli = 5;
@@ -285,7 +285,6 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
             Boolean boolUserCorrect = checkSelection();
 
             if (boolUserCorrect == true) {
-                score++;
                 Log.w("MRDA Log", "User was correct! Score: " + score);
             }
 
@@ -320,6 +319,8 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                 End-game level log
              */
 
+                calculateLevelPercentage();
+
                 //Close game
                 ((Activity) getContext()).finish();
             }
@@ -341,6 +342,32 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         }
         else{
             runIndex++;
+        }
+    }
+
+    public void calculateLevelPercentage() {
+        double percentEachLevel = (double) 0.0;
+        int hits = 0;
+        int misses = 0;
+
+        for (int i = 0; i < numOfTrials; i++) {
+            for (int j = 0; j <= runIndex; j++) {
+
+                if(userActivity[i][j] == null)
+                {
+
+                }
+                else if (userActivity[i][j]) {
+                    hits++;
+                } else if (userActivity[i][j] == false) {
+                    misses++;
+                }
+            }
+
+            percentEachLevel = (double) hits / ((double) hits + (double) misses);
+            percentages[i] = percentEachLevel * 1;
+            hits = 0;
+            misses = 0;
         }
     }
 

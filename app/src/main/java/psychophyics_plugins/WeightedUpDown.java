@@ -5,7 +5,6 @@ package psychophyics_plugins;
  */
 
 public class WeightedUpDown {
-    private int nextLevel = 0;
 
     public WeightedUpDown() {
     }
@@ -14,11 +13,11 @@ public class WeightedUpDown {
         final double threshold = 0.75;
 
         if(correct){
-            nextLevel++;
+            level++;
         }else{
-            nextLevel = (int) Math.round(level - (threshold / (1 - threshold)));
+            level = (int) Math.round(level - (threshold / (1 - threshold)));
         }
 
-        return nextLevel;
+        return level;
     }
 }
