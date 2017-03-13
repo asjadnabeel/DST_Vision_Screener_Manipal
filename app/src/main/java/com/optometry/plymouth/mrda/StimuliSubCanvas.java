@@ -63,7 +63,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
     //These should reflect user options
     int intNumOfStimuli = 5;
-    int intNumOfRealStimuli = 2;
+    int intNumOfRealStimuli = 1;
 
     //positional information
     final int bitmapDimension = 200;
@@ -275,6 +275,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                     score++;
                     Log.w("MRDA Log", "User was correct! Score: " + score);
                 }
+
                 lblFeedback = "";
                 level++;
                 lblLevel = stimuliNamesMap.get(level);

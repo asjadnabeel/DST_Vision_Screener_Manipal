@@ -14,7 +14,7 @@ public class MainScreen extends AppCompatActivity {
      * Stimuli Variables
      * Related variables to the
      */
-    private int stimuliRounds = 30;
+    private int stimuliRounds = 20;
     private int sequentialErrors = 0;
 
     @Override
@@ -36,8 +36,8 @@ public class MainScreen extends AppCompatActivity {
         //When "Options" is clicked
         findViewById(R.id.btnOptions).setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View arg0) {
+                @Override
+                public void onClick(View arg0) {
 
                 final Dialog dialog = new Dialog(MainScreen.this);
 
