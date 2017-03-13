@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import psychophyics_plugins.WeightedUpDown;
+
 /**
  * Created by David Bear on 05/02/2017.
  */
@@ -54,12 +56,22 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     Map<Integer, Bitmap> stimuliMap = new HashMap<Integer, Bitmap>();
     Map<Integer, String> stimuliNamesMap = new HashMap<Integer, String>();
 
-    //btnContinue
+    //BtnContinue properties
     Bitmap btnContinue;
     float xCoordBtnContinue;
     float yCoordBtnContinue;
 
-    int level = 1;
+    WeightedUpDown levelManager;
+
+    //User history
+    int runIndex = 0;
+    Boolean userActivity[][];
+    double percentages[];
+
+    //Trial data
+    int currentTrial = 0;
+    int level = 0;
+    int numOfTrials = 20;
 
     //These should reflect user options
     int intNumOfStimuli = 5;
@@ -69,7 +81,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     final int bitmapDimension = 200;
     final int stimImageGap = 10;
 
-    Stimuli[] stimulisList; //R
+    Stimuli[] stimulisList;
 
     StaticLayout staticLayout;
     DynamicLayout staticLayout2;
@@ -83,6 +95,10 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                 .getMetrics(displaymetrics);
         screenHeight = displaymetrics.heightPixels;
         screenWidth = displaymetrics.widthPixels;
+
+        levelManager = new WeightedUpDown();
+        userActivity = new Boolean[numOfTrials][numOfTrials];
+        percentages = new double[numOfTrials];
 
         initialiseStimuliMap();
         initialiseStimuliNamesMap();
@@ -110,44 +126,44 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     }
 
     public void initialiseStimuliMap(){
-        stimuliMap.put(1, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_00), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(2, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_20), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(3, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_40), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(4, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_70), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(5, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_85), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(6, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_00), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(7, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_10), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(8, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_20), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(9, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_30), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(10, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_40), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(11, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_50), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(12, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_60), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(13, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_70), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(14, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_80), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(15, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_90), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(16, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda3_00), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(17, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda3_20), bitmapDimension,bitmapDimension, false));
-        stimuliMap.put(18, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda3_30), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(0, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_00), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(1, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_20), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(2, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_40), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(3, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_70), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(4, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda1_85), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(5, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_00), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(6, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_10), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(7, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_20), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(8, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_30), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(9, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_40), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(10, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_50), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(11, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_60), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(12, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_70), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(13, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_80), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(14, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda2_90), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(15, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda3_00), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(16, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda3_20), bitmapDimension,bitmapDimension, false));
+        stimuliMap.put(17, Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rda3_30), bitmapDimension,bitmapDimension, false));
     }
     public void initialiseStimuliNamesMap(){
-        stimuliNamesMap.put(1, "rda1_00");
-        stimuliNamesMap.put(2, "rda1_20");
-        stimuliNamesMap.put(3, "rda1_40");
-        stimuliNamesMap.put(4, "rda1_70");
-        stimuliNamesMap.put(5, "rda1_85");
-        stimuliNamesMap.put(6, "rda2_00");
-        stimuliNamesMap.put(7, "rda2_10");
-        stimuliNamesMap.put(8, "rda2_20");
-        stimuliNamesMap.put(9, "rda2_30");
-        stimuliNamesMap.put(10, "rda2_40");
-        stimuliNamesMap.put(11, "rda2_50");
-        stimuliNamesMap.put(12, "rda2_60");
-        stimuliNamesMap.put(13, "rda2_70");
-        stimuliNamesMap.put(14, "rda2_80");
-        stimuliNamesMap.put(15, "rda2_90");
-        stimuliNamesMap.put(16, "rda3_00");
-        stimuliNamesMap.put(17, "rda3_20");
-        stimuliNamesMap.put(18, "rda3_30");
+        stimuliNamesMap.put(0, "rda1_00");
+        stimuliNamesMap.put(1, "rda1_20");
+        stimuliNamesMap.put(2, "rda1_40");
+        stimuliNamesMap.put(3, "rda1_70");
+        stimuliNamesMap.put(4, "rda1_85");
+        stimuliNamesMap.put(5, "rda2_00");
+        stimuliNamesMap.put(6, "rda2_10");
+        stimuliNamesMap.put(7, "rda2_20");
+        stimuliNamesMap.put(8, "rda2_30");
+        stimuliNamesMap.put(9, "rda2_40");
+        stimuliNamesMap.put(10, "rda2_50");
+        stimuliNamesMap.put(11, "rda2_60");
+        stimuliNamesMap.put(12, "rda2_70");
+        stimuliNamesMap.put(13, "rda2_80");
+        stimuliNamesMap.put(14, "rda2_90");
+        stimuliNamesMap.put(15, "rda3_00");
+        stimuliNamesMap.put(16, "rda3_20");
+        stimuliNamesMap.put(17, "rda3_30");
     }
 
     public void createLevel()
@@ -264,40 +280,67 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     }
 
     public void onBtnContinueClick(){
-        if(level < stimuliMap.size()){
-            //Loop through stimuli, check if isSelected == true & Bitmap.sames(image,bmptStimuli)
-                //If yes, level++,
-                //If No, record the loss, level++
-            if(checkSelectionCount() == true) {
-                Boolean boolUserCorrect = checkSelection();
+        if(checkSelectionCount() == true) {
 
-                if (boolUserCorrect == true) {
-                    score++;
-                    Log.w("MRDA Log", "User was correct! Score: " + score);
+            Boolean boolUserCorrect = checkSelection();
+
+            if (boolUserCorrect == true) {
+                score++;
+                Log.w("MRDA Log", "User was correct! Score: " + score);
+            }
+
+            addToHistory(level, boolUserCorrect);
+
+            if(currentTrial < numOfTrials - 1) {
+                lblFeedback = "";
+
+                //level select
+                level = levelManager.calculateNextLevel(boolUserCorrect, level);
+
+                if(level < 0)
+                {
+                    level = 0;
+                }
+                else if(level > stimuliMap.size() - 1)
+                {
+                    level = stimuliMap.size() -1;
                 }
 
-                lblFeedback = "";
-                level++;
+                currentTrial++;
+
                 lblLevel = stimuliNamesMap.get(level);
                 createLevel();
             }
-            else {
-                lblFeedback = "Only select " + intNumOfRealStimuli + " stimuli";
-                Toast.makeText(((Activity) getContext()).getApplicationContext(), "Hello", Toast.LENGTH_SHORT);
-                Log.w("MRDA Log", "Please select " + intNumOfRealStimuli + " stimuli");
-            }
-        }
-        else{
-            //End game
-            Log.w("MRDA Log", "End Game triggered!");
+            else{
+                //End game
+                Log.w("MRDA Log", "End Game triggered!");
 
             /*
                 TO-DO:
                 End-game level log
              */
 
-            //Close game
-            ((Activity) getContext()).finish();
+                //Close game
+                ((Activity) getContext()).finish();
+            }
+        }
+        else {
+            lblFeedback = "Only select " + intNumOfRealStimuli + " stimuli";
+            Toast.makeText(((Activity) getContext()).getApplicationContext(), "Hello", Toast.LENGTH_SHORT);
+            Log.w("MRDA Log", "Please select " + intNumOfRealStimuli + " stimuli");
+        }
+    }
+
+    private void addToHistory(int currentTrial, boolean isCorrect)
+    {
+        userActivity[currentTrial][runIndex] = isCorrect;
+
+        if(isCorrect)
+        {
+            score++;
+        }
+        else{
+            runIndex++;
         }
     }
 
