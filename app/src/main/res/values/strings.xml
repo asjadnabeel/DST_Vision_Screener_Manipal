@@ -7,4 +7,10 @@
     <string name="Option_label_2">Total number of Real stimuli</string>
     <string name="Option_label_3">Number of attempts</string>
     <string name="Option_label_4">Timeout (Seconds)</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_stimuli_tabbed_results">StimuliTabbedResults</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>

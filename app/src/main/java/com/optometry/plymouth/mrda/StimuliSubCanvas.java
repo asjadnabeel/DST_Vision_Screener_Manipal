@@ -1,7 +1,10 @@
 package com.optometry.plymouth.mrda;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import Helpers.trialData;
 import psychophyics_plugins.WeightedUpDown;
 
 /**
@@ -65,13 +69,14 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
     //User history
     int runIndex = 0;
-    Boolean userActivity[][];
     double percentages[];
+
+    Map<Integer, trialData> userHistory = new HashMap<>();
 
     //Trial data
     int currentTrial = 0;
     int level = 0;
-    int numOfTrials = 5;
+    int numOfTrials = 2;
 
     //These should reflect user options
     int intNumOfStimuli = 5;
@@ -87,6 +92,8 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     DynamicLayout staticLayout2;
     DynamicLayout staticLayout3;
 
+
+
     public StimuliSubCanvas(Context context){
         super(context);
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -97,7 +104,6 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         screenWidth = displaymetrics.widthPixels;
 
         levelManager = new WeightedUpDown();
-        userActivity = new Boolean[numOfTrials][numOfTrials];
         percentages = new double[numOfTrials];
 
         initialiseStimuliMap();
@@ -288,7 +294,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                 Log.w("MRDA Log", "User was correct! Score: " + score);
             }
 
-            addToHistory(level, boolUserCorrect);
+            addToHistory(currentTrial, boolUserCorrect);
 
             if(currentTrial < numOfTrials - 1) {
                 lblFeedback = "";
@@ -319,10 +325,13 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                 End-game level log
              */
 
-                calculateLevelPercentage();
-
                 //Close game
+                Intent intent = new Intent(getContext(), StimuliTabbedResults.class);
+                intent.putExtra("userHistory", (HashMap<Integer, trialData>) userHistory);
+                getContext().startActivity(intent);
+
                 ((Activity) getContext()).finish();
+
             }
         }
         else {
@@ -334,7 +343,9 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
     private void addToHistory(int currentTrial, boolean isCorrect)
     {
-        userActivity[currentTrial][runIndex] = isCorrect;
+        //Insert each data point into trial
+        trialData newTrial = new trialData(currentTrial, isCorrect, level);
+        userHistory.put(currentTrial, newTrial);
 
         if(isCorrect)
         {
@@ -342,32 +353,6 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         }
         else{
             runIndex++;
-        }
-    }
-
-    public void calculateLevelPercentage() {
-        double percentEachLevel = (double) 0.0;
-        int hits = 0;
-        int misses = 0;
-
-        for (int i = 0; i < numOfTrials; i++) {
-            for (int j = 0; j <= runIndex; j++) {
-
-                if(userActivity[i][j] == null)
-                {
-
-                }
-                else if (userActivity[i][j]) {
-                    hits++;
-                } else if (userActivity[i][j] == false) {
-                    misses++;
-                }
-            }
-
-            percentEachLevel = (double) hits / ((double) hits + (double) misses);
-            percentages[i] = percentEachLevel * 1;
-            hits = 0;
-            misses = 0;
         }
     }
 

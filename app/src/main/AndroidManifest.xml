@@ -15,16 +15,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Stimuli_Canvas" />
+        <activity android:name=".StimuliResultsActivity" />
         <activity
-            android:name=".StimuliScreen"
-            android:label="@string/title_activity_stimuli_screen"
+            android:name=".StimuliTabbedResults"
+            android:label="@string/title_activity_stimuli_tabbed_results"
             android:parentActivityName=".MainScreen"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.optometry.plymouth.mrda.MainScreen" />
         </activity>
-        <activity android:name=".Stimuli_Canvas"></activity>
     </application>
 
 </manifest>
