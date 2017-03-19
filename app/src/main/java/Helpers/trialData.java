@@ -10,11 +10,13 @@ public class trialData implements Serializable {
     int trialNumber;
     boolean isCorrect;
     double touchAccuracy;
+    String stimuliName;
 
-    public trialData(int trialNumber, boolean isCorrect, int level) {
+    public trialData(int trialNumber, boolean isCorrect, int level, String stimName) {
         this.trialNumber = trialNumber;
         this.isCorrect = isCorrect;
         this.level = level;
+        this.stimuliName = stimName;
     }
 
     public int getTrialNumber() {
@@ -27,7 +29,9 @@ public class trialData implements Serializable {
 
     int level;
 
-    public boolean isCorrect() {
+    public String getStimuliName() { return stimuliName;}
+
+    public boolean getIsCorrect() {
         return isCorrect;
     }
 }

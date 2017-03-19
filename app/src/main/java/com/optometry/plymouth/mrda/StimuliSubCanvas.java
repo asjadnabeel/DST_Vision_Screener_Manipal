@@ -76,7 +76,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     //Trial data
     int currentTrial = 0;
     int level = 0;
-    int numOfTrials = 2;
+    int numOfTrials = 21;
 
     //These should reflect user options
     int intNumOfStimuli = 5;
@@ -344,7 +344,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     private void addToHistory(int currentTrial, boolean isCorrect)
     {
         //Insert each data point into trial
-        trialData newTrial = new trialData(currentTrial, isCorrect, level);
+        trialData newTrial = new trialData(currentTrial, isCorrect, level, stimuliNamesMap.get(level));
         userHistory.put(currentTrial, newTrial);
 
         if(isCorrect)

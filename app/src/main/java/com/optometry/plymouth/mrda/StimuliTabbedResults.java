@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
@@ -40,12 +41,15 @@ public class StimuliTabbedResults extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private PlaceholderFragment placeholder;
+    private Map<Integer, Double> percentagesMap;
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    private static final int NUM_TABS = 1;
+    private static final int NUM_TABS = 2;
+
 
     private Map<Integer, trialData> userHistory;
 
@@ -56,6 +60,12 @@ public class StimuliTabbedResults extends AppCompatActivity {
 
         Intent intent = getIntent();
         userHistory = (Map<Integer, trialData>) intent.getSerializableExtra("userHistory");
+
+        if(userHistory != null){
+            percentagesMap = calculateLevelPercentage();
+        }else{
+            percentagesMap = new HashMap<>();
+        }
 
         placeholder = new PlaceholderFragment();
 
@@ -109,6 +119,7 @@ public class StimuliTabbedResults extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private Map<Integer, Double> fragmentPercentagesMap;
 
         public PlaceholderFragment() {
         }
@@ -125,40 +136,55 @@ public class StimuliTabbedResults extends AppCompatActivity {
 //            return fragment;
 //        }
 
-        public PlaceholderFragment sectionZero(Map<Integer, Double> integerDoubleMap){
+        public PlaceholderFragment sectionZero(int position){
             PlaceholderFragment fragment = new PlaceholderFragment();
 
             Bundle args = new Bundle();
-            args.putSerializable("position", (HashMap) integerDoubleMap);
+            args.putInt("position", position);
             fragment.setArguments(args);
             return fragment;
         }
 
-//        public PlaceholderFragment sectionOne(Map<Integer, Double> integerDoubleMap){
-//            PlaceholderFragment fragment = new PlaceholderFragment();
-//
-//            Bundle args = new Bundle();
-//            args.putSerializable("percentagesMap", (HashMap) integerDoubleMap);
-//            fragment.setArguments(args);
-//            return fragment;
-//        }
+        public PlaceholderFragment sectionOne(int position){
+            PlaceholderFragment fragment = new PlaceholderFragment();
+
+            Bundle args = new Bundle();
+            args.putInt("position", position);
+            fragment.setArguments(args);
+            return fragment;
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_stimuli_tabbed_results, container, false);
-            TextView sectionOne = (TextView) rootView.findViewById(R.id.title);
-            TextView sectionZero = (TextView) rootView.findViewById(R.id.average);
+            TextView tabPageTitle = (TextView) rootView.findViewById(R.id.title);
+            TextView average = (TextView) rootView.findViewById(R.id.average);
+
             RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(layoutManager);
 
             //sectionZero.setText("This is text view " + getArguments().getInt("position"));
             //sectionOne.setText("This is text view "+ getArguments().getInt("position"));
 
+            //TODO rename variable name
+            Map<Integer, Double> mapz = ((StimuliTabbedResults)getActivity()).getPercentagesMap();
+            Map<Integer, trialData> resultsUserHistory = ((StimuliTabbedResults)getActivity()).getUserHistory();
 
-            //Map<Integer, Double> mapz = (HashMap<Integer, Double>) getArguments().getSerializable("percentagesMap");
-            Map<Integer, Double> mapz = (HashMap<Integer, Double>) getArguments().getSerializable("position");
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(mapz, getActivity());
-            recyclerView.setAdapter(adapter);
+            switch(getArguments().getInt("position")){
+                case 0:
+                    //show nothing on General tab
+                    break;
+                case 1:
+                    tabPageTitle.setText("Optimum Level");
+                    average.setText("% average of all levels");
+                    RecyclerViewAdapter adapter = new RecyclerViewAdapter(mapz, resultsUserHistory, getActivity());
+                    recyclerView.setAdapter(adapter);
+                    break;
+            }
+
             //sectionZero.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
             return rootView;
@@ -182,10 +208,9 @@ public class StimuliTabbedResults extends AppCompatActivity {
 
             switch(position){
                 case 0: //section 1
-                    return placeholder.sectionZero(calculateLevelPercentage());
-//                case 1: //section 1
-//                    return placeholder.sectionOne(calculateLevelPercentage());
-
+                    return placeholder.sectionZero(position);
+                case 1: //section 1
+                    return placeholder.sectionOne(position);
 //                case 2: //section 1
 //                    return PlaceholderFragment.sectionTwo(position);
             }
@@ -226,20 +251,30 @@ public class StimuliTabbedResults extends AppCompatActivity {
                 if (entry.getValue().getLevel() == i) {
                     total++;
 
-                    if(entry.getValue().isCorrect())
+                    if(entry.getValue().getIsCorrect())
                     {
                         numCorrect++;
                     }
                 }
 
             }
-
-            double percentage = (double) numCorrect / (double) total;
-            dictPercentage.put(i, percentage);
+            if(total > 0) {
+                double percentage = (double) numCorrect / (double) total;
+                dictPercentage.put(i, percentage);
+            }
             //Do calc for each entry here
         }
         return dictPercentage;
     }
 
+    //Getter for level percentages
+    public Map<Integer, Double> getPercentagesMap() {
+        return percentagesMap;
+    }
+
+    //Getter for userHistories map
+    public Map<Integer, trialData> getUserHistory() {
+        return userHistory;
+    }
 
 }
