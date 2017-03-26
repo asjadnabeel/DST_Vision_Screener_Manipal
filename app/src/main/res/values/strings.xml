@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MRDA</string>
-    <string name="welcome_text">MRDA Test</string>
+    <string name="welcome_text">MRDA Plymouth</string>
     <string name="title_activity_stimuli_screen">Stimuli Screen</string>
 
     <string name="Option_label_1">Total Number of Stimuli</string>

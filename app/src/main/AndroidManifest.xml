@@ -26,6 +26,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.optometry.plymouth.mrda.MainScreen" />
         </activity>
+        <activity android:name=".Results"></activity>
     </application>
 
 </manifest>

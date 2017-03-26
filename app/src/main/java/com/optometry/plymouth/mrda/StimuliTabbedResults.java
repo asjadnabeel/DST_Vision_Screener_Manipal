@@ -42,6 +42,7 @@ public class StimuliTabbedResults extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private PlaceholderFragment placeholder;
     private Map<Integer, Double> percentagesMap;
+    private String result;
 
 
     /**
@@ -63,6 +64,7 @@ public class StimuliTabbedResults extends AppCompatActivity {
 
         if(userHistory != null){
             percentagesMap = calculateLevelPercentage();
+            result = calculateThreashold();
         }else{
             percentagesMap = new HashMap<>();
         }
@@ -83,8 +85,6 @@ public class StimuliTabbedResults extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-
     }
 
 
@@ -120,6 +120,7 @@ public class StimuliTabbedResults extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Map<Integer, Double> fragmentPercentagesMap;
+        private String averageThreshold;
 
         public PlaceholderFragment() {
         }
@@ -172,6 +173,7 @@ public class StimuliTabbedResults extends AppCompatActivity {
             //TODO rename variable name
             Map<Integer, Double> mapz = ((StimuliTabbedResults)getActivity()).getPercentagesMap();
             Map<Integer, trialData> resultsUserHistory = ((StimuliTabbedResults)getActivity()).getUserHistory();
+            averageThreshold = ((StimuliTabbedResults)getActivity()).calculateThreashold();
 
             switch(getArguments().getInt("position")){
                 case 0:
@@ -179,7 +181,7 @@ public class StimuliTabbedResults extends AppCompatActivity {
                     break;
                 case 1:
                     tabPageTitle.setText("Optimum Level");
-                    average.setText("% average of all levels");
+                    average.setText(averageThreshold);
                     RecyclerViewAdapter adapter = new RecyclerViewAdapter(mapz, resultsUserHistory, getActivity());
                     recyclerView.setAdapter(adapter);
                     break;
@@ -189,6 +191,25 @@ public class StimuliTabbedResults extends AppCompatActivity {
 
             return rootView;
         }
+    }
+
+    public String calculateThreashold()
+    {
+        int sum = 0;
+        for(int i = 0; i < userHistory.size();i++)
+        {
+            sum += userHistory.get(i).getLevel();
+        }
+        int averageLevel = sum / userHistory.size();
+        String trialName = "";
+        for(int i = 0; i < userHistory.size();i++)
+        {
+            if(userHistory.get(i).getLevel() == averageLevel)
+            {
+                trialName = userHistory.get(i).getStimuliName();
+            }
+        }
+        return trialName;
     }
 
     /**
@@ -276,5 +297,6 @@ public class StimuliTabbedResults extends AppCompatActivity {
     public Map<Integer, trialData> getUserHistory() {
         return userHistory;
     }
+
 
 }

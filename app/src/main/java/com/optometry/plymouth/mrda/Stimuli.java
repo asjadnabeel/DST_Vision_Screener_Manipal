@@ -1,6 +1,7 @@
 package com.optometry.plymouth.mrda;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 
 /**
  * Created by David Bear on 05/02/2017.
@@ -12,6 +13,7 @@ public class Stimuli {
     public float yCoordinate;
     public Bitmap feedbackImage;
     boolean isSelected;
+    Point selectedCoordinate;
 
     public Stimuli(Bitmap img, Bitmap feedbackImg)
     {

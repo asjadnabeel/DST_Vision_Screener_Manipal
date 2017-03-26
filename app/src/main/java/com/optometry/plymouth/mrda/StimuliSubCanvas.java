@@ -1,8 +1,6 @@
 package com.optometry.plymouth.mrda;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.os.Bundle;
 import android.text.DynamicLayout;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -21,12 +21,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import Helpers.trialData;
+import Utilities.StopWatch;
 import psychophyics_plugins.WeightedUpDown;
 
 /**
@@ -50,6 +54,8 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 /*    LinearLayout feedbackLayout;
     TextView lblInstructions;
     TextView lblFeedback;*/
+
+    long startTime;
 
     String lblInstructions;
     String lblLevel;
@@ -76,7 +82,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     //Trial data
     int currentTrial = 0;
     int level = 0;
-    int numOfTrials = 21;
+    int numOfTrials = 7;
 
     //These should reflect user options
     int intNumOfStimuli = 5;
@@ -92,6 +98,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     DynamicLayout staticLayout2;
     DynamicLayout staticLayout3;
 
+    StopWatch roundStopwatch = new StopWatch();
 
 
     public StimuliSubCanvas(Context context){
@@ -128,6 +135,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
         btnNext = new Button(getContext());
 
+        startTime = new Date().getTime();
         createLevel();
     }
 
@@ -216,6 +224,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
             //Update xPosition
             xPosition += bmpStimuli.getWidth() + stimImageGap;
         }
+        roundStopwatch.start();
     }
 
     @Override
@@ -259,17 +268,26 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                 xImgCoord = stimulisList[i].xCoordinate;
                 yImgCoord = stimulisList[i].yCoordinate;
 
-                //Check if the user touched within the boundaries of any of our icons
-                if ((touchXCoord >= xImgCoord && touchXCoord <= xImgCoord + bmpStimuli.getWidth())
-                        && (touchYCoord >= yImgCoord && touchYCoord <= yImgCoord + bmpStimuli.getHeight())) {
+                //Check if the user touched within the boundaries of the icon
+                if ((touchXCoord >= xImgCoord && touchXCoord <= xImgCoord + bmpStimuli.getWidth()) //X coord + width
+                        && (touchYCoord >= yImgCoord && touchYCoord <= yImgCoord + bmpStimuli.getHeight())) { //Y coord + height
+
+                    //Point selectedLocation = new Point((int) touchXCoord, (int) touchYCoord);
+                    int centerX = ((int) xImgCoord + (int) (xImgCoord + bmpStimuli.getWidth())) / 2;
+                    int centery = ((int) yImgCoord + (int) (yImgCoord + bmpStimuli.getHeight())) / 2;
+
+                    Point selectedLocation = new Point( centerX - (int) touchXCoord, centery - (int) touchYCoord);
 
                     //Select accordingly
                     if(stimulisList[i].isSelected == true)
                     {
                         stimulisList[i].isSelected = false;
-                        stimulisList[i].feedbackImage = bmpBlankFeedback;}
+                        stimulisList[i].selectedCoordinate = null;
+                        stimulisList[i].feedbackImage = bmpBlankFeedback;
+                    }
                     else{
                         stimulisList[i].isSelected = true;
+                        stimulisList[i].selectedCoordinate = selectedLocation;
                         stimulisList[i].feedbackImage = bmpFeedback;
                     }
                 }
@@ -287,14 +305,25 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
     public void onBtnContinueClick(){
         if(checkSelectionCount() == true) {
+            roundStopwatch.stop();
 
-            Boolean boolUserCorrect = checkSelection();
+            long elapsedTime = roundStopwatch.getElapsedTime();
+
+            List<Integer> trueIndex = getTrueIndex();
+            List<Integer> selectedIndex = getSelectedIndex();
+            List<Utilities.Point> accuracy = getSelectedAccuracy();
+
+            Boolean boolUserCorrect = false;
+            if(selectedIndex.equals(trueIndex))
+            {
+                boolUserCorrect = true;
+            }
 
             if (boolUserCorrect == true) {
                 Log.w("MRDA Log", "User was correct! Score: " + score);
             }
 
-            addToHistory(currentTrial, boolUserCorrect);
+            addToHistory(currentTrial, trueIndex, selectedIndex, boolUserCorrect, accuracy, elapsedTime);
 
             if(currentTrial < numOfTrials - 1) {
                 lblFeedback = "";
@@ -326,12 +355,21 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
              */
 
                 //Close game
-                Intent intent = new Intent(getContext(), StimuliTabbedResults.class);
-                intent.putExtra("userHistory", (HashMap<Integer, trialData>) userHistory);
+                long elapsedTimeInMs = new Date().getTime() - startTime;
+                long seconds =  (elapsedTimeInMs/1000) % 60;
+                long minutes = (elapsedTimeInMs/1000-seconds)/60;
+
+                String totalTime = minutes + ":" + seconds;
+
+                Bundle args = new Bundle();
+                args.putSerializable("userHistory",(HashMap<Integer, trialData>)userHistory);
+                args.putString("totalTime", totalTime);
+
+                Intent intent = new Intent(getContext(), Results.class);
+                intent.putExtras(args);
                 getContext().startActivity(intent);
 
                 ((Activity) getContext()).finish();
-
             }
         }
         else {
@@ -341,10 +379,12 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         }
     }
 
-    private void addToHistory(int currentTrial, boolean isCorrect)
+    private void addToHistory(int currentTrial, List<Integer> trueIndex, List<Integer> selectedIndex, boolean isCorrect,
+                              List<Utilities.Point> accuracyList, long timeMs)
     {
         //Insert each data point into trial
-        trialData newTrial = new trialData(currentTrial, isCorrect, level, stimuliNamesMap.get(level));
+        trialData newTrial = new trialData(currentTrial, trueIndex, selectedIndex, isCorrect, level,
+                stimuliNamesMap.get(level),accuracyList,  timeMs);
         userHistory.put(currentTrial, newTrial);
 
         if(isCorrect)
@@ -374,6 +414,20 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         return isCorrect;
     }
 
+    private List<Utilities.Point> getSelectedAccuracy(){
+        List<Utilities.Point> list = new ArrayList<>();
+        Utilities.Point p;
+        for(int i = 0; i < intNumOfStimuli; i++) {
+            if (stimulisList[i].isSelected == true) {
+                p = new Utilities.Point(stimulisList[i].selectedCoordinate.x,stimulisList[i].selectedCoordinate.y );
+                list.add(p);
+            }
+        }
+
+        return list;
+    }
+
+    @Deprecated
     private boolean checkSelection(){
         boolean isCorrect = false;
         int correct = 0;
@@ -391,5 +445,27 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         }
 
         return isCorrect;
+    }
+
+    private List<Integer> getTrueIndex()
+    {
+        List<Integer> indexes = new ArrayList<Integer>();
+        for(int i = 0; i < intNumOfStimuli; i++) {
+            if (stimulisList[i].image.sameAs(bmpStimuli)) {
+                indexes.add(i);
+            }
+        }
+        return indexes;
+    }
+
+    private List<Integer> getSelectedIndex()
+    {
+        List<Integer> indexes = new ArrayList<Integer>();
+        for(int i = 0; i < intNumOfStimuli; i++) {
+            if (stimulisList[i].isSelected == true) {
+                indexes.add(i);
+            }
+        }
+        return indexes;
     }
 }
