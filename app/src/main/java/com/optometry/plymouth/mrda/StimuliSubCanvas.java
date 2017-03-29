@@ -82,7 +82,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     //Trial data
     int currentTrial = 0;
     int level = 0;
-    int numOfTrials = 7;
+    int numOfTrials = 5;
 
     //These should reflect user options
     int intNumOfStimuli = 5;
@@ -374,7 +374,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         }
         else {
             lblFeedback = "Only select " + intNumOfRealStimuli + " stimuli";
-            Toast.makeText(((Activity) getContext()).getApplicationContext(), "Hello", Toast.LENGTH_SHORT);
+            Toast.makeText(getContext().getApplicationContext(), "Hello", Toast.LENGTH_SHORT);
             Log.w("MRDA Log", "Please select " + intNumOfRealStimuli + " stimuli");
         }
     }
@@ -401,7 +401,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         int selectionCount = 0;
 
         for(int i = 0; i < intNumOfStimuli; i++) {
-            if (stimulisList[i].isSelected == true) {
+            if (stimulisList[i].isSelected) {
                 selectionCount++;
             }
         }
@@ -418,7 +418,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         List<Utilities.Point> list = new ArrayList<>();
         Utilities.Point p;
         for(int i = 0; i < intNumOfStimuli; i++) {
-            if (stimulisList[i].isSelected == true) {
+            if (stimulisList[i].isSelected) {
                 p = new Utilities.Point(stimulisList[i].selectedCoordinate.x,stimulisList[i].selectedCoordinate.y );
                 list.add(p);
             }
@@ -433,7 +433,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         int correct = 0;
 
         for(int i = 0; i < intNumOfStimuli; i++) {
-                if (stimulisList[i].isSelected == true &&
+                if (stimulisList[i].isSelected &&
                         stimulisList[i].image.sameAs(bmpStimuli)) {
                     correct++;
                 }
@@ -462,7 +462,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     {
         List<Integer> indexes = new ArrayList<Integer>();
         for(int i = 0; i < intNumOfStimuli; i++) {
-            if (stimulisList[i].isSelected == true) {
+            if (stimulisList[i].isSelected) {
                 indexes.add(i);
             }
         }

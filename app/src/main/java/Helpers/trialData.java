@@ -52,4 +52,28 @@ public class trialData implements Serializable {
     public boolean getIsCorrect() {
         return isCorrect;
     }
+
+    public List<Integer> getTrueIndexes() {
+        return trueIndexes;
+    }
+
+    public List<Integer> getSelectedIndexes() {
+        return selectedIndexes;
+    }
+
+    public List<Utilities.Point> getAccuracyList() {
+        return accuracyList;
+    }
+
+    public boolean isCorrect() {
+        return isCorrect;
+    }
+
+    public long getElapsedTimeMs() {
+        return elapsedTimeMs;
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
 }

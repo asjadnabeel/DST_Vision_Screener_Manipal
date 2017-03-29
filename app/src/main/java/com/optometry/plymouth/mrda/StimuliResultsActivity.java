@@ -11,15 +11,13 @@ import Helpers.trialData;
 
 public class StimuliResultsActivity extends AppCompatActivity {
 
-    private Map<Integer, trialData> userHistory;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stimuli_results);
 
         Intent intent = getIntent();
-        userHistory = (Map<Integer, trialData>) intent.getSerializableExtra("userHistory");
+        Map<Integer, trialData> userHistory = (Map<Integer, trialData>) intent.getSerializableExtra("userHistory");
 
         //TO:DO plan layout of the results activity
     }
