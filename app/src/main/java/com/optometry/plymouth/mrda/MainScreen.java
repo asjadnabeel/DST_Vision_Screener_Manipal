@@ -2,9 +2,12 @@ package com.optometry.plymouth.mrda;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -20,6 +23,12 @@ public class MainScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
         setContentView(R.layout.activity_main_screen);
 
         findViewById(R.id.btnStart).setOnClickListener(new View.OnClickListener() {
@@ -34,7 +43,7 @@ public class MainScreen extends AppCompatActivity {
         });
 
         //When "Options" is clicked
-        findViewById(R.id.btnOptions).setOnClickListener(new View.OnClickListener() {
+       /* findViewById(R.id.btnOptions).setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View arg0) {
@@ -71,6 +80,6 @@ public class MainScreen extends AppCompatActivity {
                 //Everything is prepared, show the user
                 dialog.show();
             }
-        });
+        });*/
     }
 }

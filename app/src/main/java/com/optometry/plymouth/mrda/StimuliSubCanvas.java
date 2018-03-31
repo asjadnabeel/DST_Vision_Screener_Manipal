@@ -82,7 +82,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
     //Trial data
     int currentTrial = 0;
     int level = 0;
-    int numOfTrials = 5;
+    int numOfTrials = 10;
 
     //These should reflect user options
     int intNumOfStimuli = 5;
@@ -119,7 +119,8 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         this.setOnTouchListener(this);
 
         /*initialise btnContinue - set bmp image and coordinates on the screen*/
-        btnContinue = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn_next), 400,100, false);
+        btnContinue = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.btn_next4), 250,50, false);
+
         xCoordBtnContinue = screenWidth - (btnContinue.getWidth() + 50);//10 is the margin
         yCoordBtnContinue = screenHeight - (btnContinue.getHeight() + 80);
 
@@ -129,7 +130,9 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         textFont.setTextSize(25 * getResources().getDisplayMetrics().density);
         textFont.setColor(0xFF000000);
 
-        lblInstructions = "Please select " + intNumOfRealStimuli + " Stimuli";
+        //lblInstructions = "Please select " + intNumOfRealStimuli + " Stimuli";
+        lblInstructions = "";
+
         lblLevel = stimuliNamesMap.get(level);
         lblFeedback = "";
 
@@ -187,7 +190,9 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         //This one should change according to the level
         bmpStimuli = stimuliMap.get(level);
 
-        bmpFeedback = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.feedback_arrow2), bitmapDimension,bitmapDimension, false);
+        //bmpFeedback = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.feedback_arrow3), (bitmapDimension-50),(bitmapDimension-30), false);
+        bmpFeedback = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.feedback_blank), (bitmapDimension-50),(bitmapDimension-30), false);
+
         bmpBlankFeedback = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.feedback_blank), bitmapDimension,bitmapDimension, false);
 
         stimulisList = new Stimuli[intNumOfStimuli];
@@ -236,10 +241,25 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
         for(int i = 0; i < intNumOfStimuli; i++) {
             canvas.drawBitmap(stimulisList[i].image, stimulisList[i].xCoordinate, stimulisList[i].yCoordinate, new Paint());
             canvas.drawBitmap(stimulisList[i].feedbackImage, stimulisList[i].xCoordinate, stimulisList[i].yCoordinate + stimulisList[i].image.getHeight() + 20, new Paint());
+
         }
 
         /*Draw btnContinue on screen*/
-        canvas.drawBitmap(btnContinue, xCoordBtnContinue, yCoordBtnContinue, new Paint());
+        //canvas.drawBitmap(btnContinue, xCoordBtnContinue, yCoordBtnContinue, new Paint());
+        Paint paint1 = new Paint();
+        paint1.setColor(Color.WHITE);
+        paint1.setStyle(Paint.Style.FILL);
+        paint1.setTextSize(30);
+        paint1.setStrokeWidth(5);
+
+
+
+        //canvas.drawText((numOfTrials - currentTrial) + "   To Go",xCoordBtnContinue, yCoordBtnContinue,paint1);
+
+        //canvas.drawBitmap(btnContinue, xCoordBtnContinue, yCoordBtnContinue, null);
+
+
+
 
         staticLayout = new StaticLayout(lblInstructions, textFont, screenWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0, false);
         staticLayout2 = new DynamicLayout(lblLevel, textFont, screenWidth, Layout.Alignment.ALIGN_OPPOSITE, 1.0f, 0, false);
@@ -263,6 +283,7 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
 
             float xImgCoord;
             float yImgCoord;
+
             for(int i = 0; i < intNumOfStimuli; i++)
             {
                 xImgCoord = stimulisList[i].xCoordinate;
@@ -281,22 +302,30 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                     //Select accordingly
                     if(stimulisList[i].isSelected == true)
                     {
+
                         stimulisList[i].isSelected = false;
                         stimulisList[i].selectedCoordinate = null;
                         stimulisList[i].feedbackImage = bmpBlankFeedback;
+
+
+
                     }
                     else{
                         stimulisList[i].isSelected = true;
                         stimulisList[i].selectedCoordinate = selectedLocation;
                         stimulisList[i].feedbackImage = bmpFeedback;
+
                     }
                 }
             }//end of for loop
 
+            onBtnContinueClick();
+
+
             if ((touchXCoord >= xCoordBtnContinue && touchXCoord <= xCoordBtnContinue + btnContinue.getWidth())
                     && (touchYCoord >= yCoordBtnContinue && touchYCoord <= yCoordBtnContinue + btnContinue.getHeight())){
 
-                onBtnContinueClick();
+              //  onBtnContinueClick();
 
             }//end of if
         }
@@ -326,6 +355,9 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
             addToHistory(currentTrial, trueIndex, selectedIndex, boolUserCorrect, accuracy, elapsedTime);
 
             if(currentTrial < numOfTrials - 1) {
+
+
+
                 lblFeedback = "";
 
                 //level select
@@ -343,6 +375,10 @@ public class StimuliSubCanvas extends View implements View.OnTouchListener {
                 currentTrial++;
 
                 lblLevel = stimuliNamesMap.get(level);
+
+                //Unwanted
+                lblLevel = "";
+
                 createLevel();
             }
             else{

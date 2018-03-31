@@ -1,11 +1,22 @@
 package com.optometry.plymouth.mrda;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,26 +39,109 @@ public class Results extends AppCompatActivity {
 
     private Map<Integer, trialData> userHistory;
     String totalTime;
+
+    SharedPreferences sp;
+
+    Button btn_amsler,retryButton;
+    Dialog builder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
+
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
+
+        sp =  getApplicationContext().getSharedPreferences("Login", 0);
+
+
+        btn_amsler = (Button) findViewById(R.id.btn_amslerTrig);
+        btn_amsler.setOnClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getApplicationContext(), VO_MainActivity.class);
+                //intent.putExtra("USER_ID", Ed_uid.getText().toString());
+                startActivity(intent);
+
+            }
+        });
+
+
+        retryButton = (Button) findViewById(R.id.repeatButton);
+        retryButton.setOnClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getApplicationContext(), MainScreen.class);
+                //intent.putExtra("USER_ID", Ed_uid.getText().toString());
+                startActivity(intent);
+
+            }
+        });
+
+
 
         userHistory = (Map<Integer, trialData>)bundle.getSerializable("userHistory");
         totalTime = bundle.getString("totalTime");
 
         placeContents();
         
-        //TODO save everything in a file
+        //save everything in a file
         try {
             saveToFile();
         } catch (IOException e) {
             Toast.makeText(this, "Cannot write to File", Toast.LENGTH_LONG);
         }
+
+
+
+        builder = new Dialog(this);
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        builder.getWindow().setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                //nothing;
+            }
+        });
+
+        ImageView imageView = new ImageView(this);
+        imageView.setImageResource(R.drawable.rotatephone);
+        builder.addContentView(imageView, new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        builder.show();
+
     }
+
+
+    public void onConfigurationChanged(Configuration newConfig){
+        super.onConfigurationChanged(newConfig);
+
+
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            builder.show();
+        }
+        else if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+        {
+            builder.hide();
+            Intent intent = new Intent(getApplicationContext(), VO_MainActivity.class);
+            //intent.putExtra("USER_ID", Ed_uid.getText().toString());
+            startActivity(intent);
+
+        }
+
+
+    }
+
+
 
     private void saveToFile() throws IOException {
 
@@ -106,9 +200,34 @@ public class Results extends AppCompatActivity {
 
 
             trialData = String.format("%s, %s, [%s], [%s], [%s], %s, %s\n", trialNumber, stimuliName, trueIndeces, selectedIndeces, accuracyPoints, elapsedTimeMS, timeStamp);
+
+
+            SharedPreferences.Editor Ed = sp.edit();
+            Ed.putString("MRDA_trialNumber", trialNumber);
+            Ed.putString("MRDA_stimuliName,", stimuliName);
+            Ed.putString("MRDA_trueIndeces",  trueIndeces.toString());
+            Ed.putString("MRDA_selectedIndeces",selectedIndeces.toString() );
+            Ed.putString("MRDA_accuracyPoints",accuracyPoints.toString() );
+            Ed.putString("MRDA_elapsedTimeMS",elapsedTimeMS );
+            Ed.putString("MRDA_accuracyPoints",timeStamp );
+            Ed.commit();
+
+
+
             writer.append(trialData);
+
+            TextView textOthers =  (TextView)findViewById(R.id.textOthers);
+
+            textOthers.setText("MRDA_trialNumber: " +trialNumber+
+                    "\nMRDA_stimuliName:"+stimuliName+
+                    "\nMRDA_trueIndeces:"+trueIndeces.toString()+
+                    "\nMRDA_selectedIndeces"+selectedIndeces.toString()+
+                    "\nMRDA_accuracyPoints"+accuracyPoints.toString()+
+                    "\nMRDA_elapsedTimeMS"+elapsedTimeMS+
+                    "\nMRDA_accuracyPoints"+timeStamp);
         }
         writer.close();
+
     }
 
     public void placeContents()
@@ -117,11 +236,13 @@ public class Results extends AppCompatActivity {
         TextView txtAverageStim;
         TextView txtTotalRounds;
         TextView txtTotalTime;
+        TextView textOthers;
 
         txtDateView =  (TextView)findViewById(R.id.txtDate);
         txtTotalTime = (TextView)findViewById(R.id.txtTotalTime);
         txtTotalRounds =  (TextView)findViewById(R.id.txtTotalRounds);
         txtAverageStim =  (TextView)findViewById(R.id.txtOptStim);
+
 
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
@@ -129,12 +250,14 @@ public class Results extends AppCompatActivity {
         txtTotalTime.setText(totalTime);
         txtTotalRounds.setText(Integer.toString(userHistory.size()));
         txtAverageStim.setText(calculateThreashold());
+
+
     }
 
     private String calculateThreashold()
     {
         int sum = 0;
-        for(int i = userHistory.size() - 5; i < userHistory.size();i++)
+        for(int i = userHistory.size() - 10; i < userHistory.size();i++)
         {
             sum += userHistory.get(i).getLevel();
         }
@@ -143,7 +266,7 @@ public class Results extends AppCompatActivity {
 
         //Now get trialName
         String trialName = "";
-        for(int i = userHistory.size() - 5; i < userHistory.size();i++)
+        for(int i = userHistory.size() - 10; i < userHistory.size();i++)
         {
             if(userHistory.get(i).getLevel() == averageLevel)
             {
